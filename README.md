@@ -15,7 +15,12 @@ The fastest way to deploy **GCP Token Monitor** to your Google Cloud project is 
    ```bash
    gcloud auth login
    ```
-2. **Open this repository in Antigravity** and send the following prompt:
+2. **Clone and open this repository in Antigravity**:
+   ```bash
+   git clone https://github.com/bapimohanty-goog/TokenMonitor.git
+   cd TokenMonitor
+   ```
+   Open the cloned `TokenMonitor` folder in Antigravity (**File → Open Folder...** or run `agy .`), then send the following prompt:
    > `Deploy TokenMonitor to my GCP project ID: <YOUR_GCP_PROJECT_ID>`
 3. **What Antigravity will automate for you**:
    - Enables the required GCP APIs (`run`, `cloudbuild`, `artifactregistry`, `bigquery`, `logging`).
