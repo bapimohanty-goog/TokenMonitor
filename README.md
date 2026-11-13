@@ -7,6 +7,29 @@ A full-stack observability dashboard that monitors LLM token usage and cost in G
 
 ---
 
+## Quick Deploy with Antigravity
+
+The fastest way to deploy **GCP Token Monitor** to your Google Cloud project is using **Google Antigravity**:
+
+1. **Authenticate `gcloud` locally** (one-time prerequisite):
+   ```bash
+   gcloud auth login
+   ```
+2. **Open this repository in Antigravity** and send the following prompt:
+   > `Deploy TokenMonitor to my GCP project ID: <YOUR_GCP_PROJECT_ID>`
+3. **What Antigravity will automate for you**:
+   - Enables the required GCP APIs (`run`, `cloudbuild`, `artifactregistry`, `bigquery`, `logging`).
+   - Creates the `token-monitor-sa` Service Account with least-privilege BigQuery IAM roles (`roles/bigquery.jobUser`, `roles/bigquery.dataViewer`, `roles/bigquery.dataEditor`) and configures Cloud Build permissions.
+   - Creates the `realtime_llm_telemetry` BigQuery dataset and `token-monitor-realtime-sink` Cloud Logging Sink.
+   - Builds and deploys the container to **Cloud Run** (`--no-allow-unauthenticated`) and verifies `/api/health` and `/api/config`.
+4. **Open your deployed dashboard**:
+   ```bash
+   gcloud run services proxy token-monitor --region us-central1 --project <YOUR_GCP_PROJECT_ID> --port 8080
+   ```
+   Open `http://localhost:8080` and enter your BigQuery Cloud Billing export `project.dataset.table` in the **GCP Billing Export Location** dialog (or select **Simulated Demo Data**).
+
+---
+
 ## Screenshots
 
 ### Hybrid Dashboard (Reconciled Billing + Live SDK Telemetry)
