@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Build outputs
+server/dist/
+client/dist/
+
+# Environment & secrets
+.env
+.env.local
+*.pem
+*.key
+*service-account*.json
+
+# OS & editor files
+.DS_Store
+*.log
