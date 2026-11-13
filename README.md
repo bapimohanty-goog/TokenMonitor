@@ -7,6 +7,19 @@ A full-stack observability dashboard that monitors LLM token usage and cost in G
 
 ---
 
+## Screenshots
+
+### Hybrid Dashboard (Reconciled Billing + Live SDK Telemetry)
+![GCP Token Monitor Dashboard](docs/screenshots/dashboard-overview.jpg)
+
+### Interactive BigQuery Billing Export & Real-Time Sink Setup
+![GCP Billing Export Location Dialog](docs/screenshots/billing-export-config.jpg)
+
+### Multi-Select Attribution Filters (Project, User, Agent)
+![Multi-Select User Filter](docs/screenshots/multi-select-filters.jpg)
+
+---
+
 ## Architecture & Key Files
 
 - **Frontend (`client/`)**: React 18, TypeScript, Vite, Tailwind CSS, Recharts, Lucide Icons.
