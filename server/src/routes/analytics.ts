@@ -236,6 +236,7 @@ export function createAnalyticsRouter(state: RuntimeState): Router {
         projects: parseCsvParam(req.query.projects),
         users: parseCsvParam(req.query.users),
         agents: parseCsvParam(req.query.agents),
+        models: parseCsvParam(req.query.models),
       };
       const data = await state.client.getDashboardData(params);
       res.json(data);

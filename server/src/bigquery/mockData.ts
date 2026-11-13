@@ -177,6 +177,7 @@ export class MockAnalyticsClient {
       projects: PROJECTS.map((p) => ({ id: p.id, label: p.name })),
       users: USERS.map((u) => ({ id: u, label: u })),
       agents: AGENTS.map((a) => ({ id: a, label: a })),
+      models: SKUS.map((s) => ({ id: s.name, label: s.name })),
       hasUnlabelledData: true,
     };
   }
@@ -192,7 +193,8 @@ export class MockAnalyticsClient {
     const matchesDimension = (r: RawMockRecord) =>
       (params.projects.length === 0 || params.projects.includes(r.projectId)) &&
       (params.users.length === 0 || params.users.includes(r.userId)) &&
-      (params.agents.length === 0 || params.agents.includes(r.agentId));
+      (params.agents.length === 0 || params.agents.includes(r.agentId)) &&
+      (params.models.length === 0 || params.models.includes(r.skuDescription));
 
     const currentRows = records.filter(
       (r) => r.timestampMs >= startMs && r.timestampMs < endMs && matchesDimension(r)
@@ -210,6 +212,7 @@ export class MockAnalyticsClient {
     const projectMap = new Map<string, BreakdownItem>();
     const userMap = new Map<string, BreakdownItem>();
     const agentMap = new Map<string, BreakdownItem>();
+    const modelMap = new Map<string, BreakdownItem>();
     const tableMap = new Map<string, UsageRow>();
 
     for (const r of currentRows) {
@@ -265,6 +268,7 @@ export class MockAnalyticsClient {
       addBreakdown(projectMap, r.projectId, r.projectName);
       addBreakdown(userMap, r.userId, r.userId);
       addBreakdown(agentMap, r.agentId, r.agentId);
+      addBreakdown(modelMap, r.skuDescription, r.skuDescription);
 
       const tableKey = `${bucket}|${r.projectId}|${r.userId}|${r.agentId}|${r.skuDescription}|${dataSource}`;
       const existingRow = tableMap.get(tableKey) ?? {
@@ -304,6 +308,7 @@ export class MockAnalyticsClient {
     const agents = sortTop10(agentMap);
     const users = sortTop10(userMap);
     const projects = sortTop10(projectMap);
+    const models = sortTop10(modelMap);
 
     const topAgentRow = agents.find((a) => a.id !== 'unassigned') ?? agents[0] ?? null;
 
@@ -347,6 +352,7 @@ export class MockAnalyticsClient {
         projects,
         users,
         agents,
+        models,
       },
       usageRows,
       hasAnyLabels:

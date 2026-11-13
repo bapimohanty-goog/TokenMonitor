@@ -17,9 +17,11 @@ interface TopBarProps {
   selectedProjects: string[];
   selectedUsers: string[];
   selectedAgents: string[];
+  selectedModels: string[];
   onProjectsChange: (next: string[]) => void;
   onUsersChange: (next: string[]) => void;
   onAgentsChange: (next: string[]) => void;
+  onModelsChange: (next: string[]) => void;
   onRefresh: () => void;
   onOpenConfig: () => void;
   billingConfig: BillingExportConfig | null;
@@ -50,9 +52,11 @@ export function TopBar({
   selectedProjects,
   selectedUsers,
   selectedAgents,
+  selectedModels,
   onProjectsChange,
   onUsersChange,
   onAgentsChange,
+  onModelsChange,
   onRefresh,
   onOpenConfig,
   billingConfig,
@@ -234,6 +238,13 @@ export function TopBar({
               options={filters?.agents ?? []}
               selected={selectedAgents}
               onChange={onAgentsChange}
+              disabled={!filters}
+            />
+            <MultiSelectDropdown
+              label="Model"
+              options={filters?.models ?? []}
+              selected={selectedModels}
+              onChange={onModelsChange}
               disabled={!filters}
             />
 

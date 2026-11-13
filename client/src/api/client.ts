@@ -45,6 +45,7 @@ export interface FetchDashboardArgs {
   projects: string[];
   users: string[];
   agents: string[];
+  models: string[];
 }
 
 export async function fetchFilterOptions(
@@ -72,6 +73,7 @@ export async function fetchDashboardData(
   if (args.projects.length > 0) params.set('projects', args.projects.join(','));
   if (args.users.length > 0) params.set('users', args.users.join(','));
   if (args.agents.length > 0) params.set('agents', args.agents.join(','));
+  if (args.models.length > 0) params.set('models', args.models.join(','));
 
   const res = await fetch(`/api/dashboard?${params.toString()}`);
   if (!res.ok) {

@@ -81,6 +81,7 @@ export function App() {
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
 
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -156,6 +157,7 @@ export function App() {
           projects: selectedProjects,
           users: selectedUsers,
           agents: selectedAgents,
+          models: selectedModels,
         }),
       ]);
       setFilters(filterRes);
@@ -175,6 +177,7 @@ export function App() {
     selectedProjects,
     selectedUsers,
     selectedAgents,
+    selectedModels,
   ]);
 
   useEffect(() => {
@@ -187,6 +190,7 @@ export function App() {
     setSelectedProjects([]);
     setSelectedUsers([]);
     setSelectedAgents([]);
+    setSelectedModels([]);
     setRefreshTick((t) => t + 1);
   };
 
@@ -204,9 +208,11 @@ export function App() {
         selectedProjects={selectedProjects}
         selectedUsers={selectedUsers}
         selectedAgents={selectedAgents}
+        selectedModels={selectedModels}
         onProjectsChange={setSelectedProjects}
         onUsersChange={setSelectedUsers}
         onAgentsChange={setSelectedAgents}
+        onModelsChange={setSelectedModels}
         onRefresh={() => setRefreshTick((t) => t + 1)}
         onOpenConfig={() => setIsConfigOpen(true)}
         billingConfig={billingConfig}
@@ -293,6 +299,7 @@ export function App() {
                   projects={dashboard?.breakdowns.projects ?? []}
                   users={dashboard?.breakdowns.users ?? []}
                   agents={dashboard?.breakdowns.agents ?? []}
+                  models={dashboard?.breakdowns.models ?? []}
                   hasAnyLabels={dashboard?.hasAnyLabels ?? true}
                   isLoading={isLoading}
                 />

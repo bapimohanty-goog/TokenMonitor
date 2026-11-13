@@ -1,4 +1,4 @@
-import { Bot, FolderGit2, Info, Users } from 'lucide-react';
+import { Bot, Cpu, FolderGit2, Info, Users } from 'lucide-react';
 import { useState } from 'react';
 import {
   Bar,
@@ -17,22 +17,25 @@ interface BreakdownChartsProps {
   projects: BreakdownItem[];
   users: BreakdownItem[];
   agents: BreakdownItem[];
+  models: BreakdownItem[];
   hasAnyLabels: boolean;
   isLoading: boolean;
 }
 
-type TabKey = 'projects' | 'users' | 'agents';
+type TabKey = 'projects' | 'users' | 'agents' | 'models';
 
 const TABS: Array<{ key: TabKey; label: string; icon: typeof FolderGit2 }> = [
   { key: 'projects', label: 'Top 10 Projects', icon: FolderGit2 },
   { key: 'users', label: 'Top 10 Users', icon: Users },
   { key: 'agents', label: 'Top 10 Agents', icon: Bot },
+  { key: 'models', label: 'Top 10 Models', icon: Cpu },
 ];
 
 export function BreakdownCharts({
   projects,
   users,
   agents,
+  models,
   hasAnyLabels,
   isLoading,
 }: BreakdownChartsProps) {
@@ -43,7 +46,9 @@ export function BreakdownCharts({
       ? projects
       : activeTab === 'users'
         ? users
-        : agents;
+        : activeTab === 'agents'
+          ? agents
+          : models;
 
   const showMissingLabelsNotice =
     !hasAnyLabels && (activeTab === 'users' || activeTab === 'agents');

@@ -15,6 +15,7 @@ export interface FilterOptionsResponse {
   projects: FilterOption[];
   users: FilterOption[];
   agents: FilterOption[];
+  models: FilterOption[];
   hasUnlabelledData: boolean;
 }
 
@@ -92,6 +93,7 @@ export interface DashboardResponse {
     projects: BreakdownItem[];
     users: BreakdownItem[];
     agents: BreakdownItem[];
+    models: BreakdownItem[];
   };
   usageRows: UsageRow[];
   hasAnyLabels: boolean;

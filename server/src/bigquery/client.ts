@@ -208,15 +208,17 @@ export class BigQueryAnalyticsClient {
       projects: Array<{ id: string; label: string }> | null;
       users: string[] | null;
       agents: string[] | null;
+      models: string[] | null;
     }>(
       query,
       { startTime, endTime },
       { startTime: 'TIMESTAMP', endTime: 'TIMESTAMP' }
     );
 
-    const row = rows[0] ?? { projects: [], users: [], agents: [] };
+    const row = rows[0] ?? { projects: [], users: [], agents: [], models: [] };
     const users = (row.users ?? []).map((u) => ({ id: u, label: u }));
     const agents = (row.agents ?? []).map((a) => ({ id: a, label: a }));
+    const models = (row.models ?? []).map((m) => ({ id: m, label: m }));
     const hasUnlabelledData =
       users.some((u) => u.id === 'unassigned') ||
       agents.some((a) => a.id === 'unassigned');
@@ -225,6 +227,7 @@ export class BigQueryAnalyticsClient {
       projects: row.projects ?? [],
       users,
       agents,
+      models,
       hasUnlabelledData,
     };
   }
@@ -260,6 +263,7 @@ export class BigQueryAnalyticsClient {
       projects: ['STRING'],
       users: ['STRING'],
       agents: ['STRING'],
+      models: ['STRING'],
     };
 
     const billingTable = this.config.fullyQualifiedTable;
@@ -271,6 +275,7 @@ export class BigQueryAnalyticsClient {
       projects: params.projects,
       users: params.users,
       agents: params.agents,
+      models: params.models,
     };
 
     const prevParams = {
@@ -279,6 +284,7 @@ export class BigQueryAnalyticsClient {
       projects: params.projects,
       users: params.users,
       agents: params.agents,
+      models: params.models,
     };
 
     const billingPromises = queryBillingWindow
@@ -308,15 +314,21 @@ export class BigQueryAnalyticsClient {
             billingParams,
             sharedTypes
           ),
+          this.runParameterizedQuery<BdRow>(
+            buildBreakdownQuery(billingTable, 'model'),
+            billingParams,
+            sharedTypes
+          ),
           this.runParameterizedQuery<TableRow>(
             buildUsageTableQuery(billingTable, params.granularity),
             billingParams,
             sharedTypes
           ),
         ])
-      : Promise.resolve([[], [], [], [], [], []] as [
+      : Promise.resolve([[], [], [], [], [], [], []] as [
           KpiRow[],
           TsRow[],
+          BdRow[],
           BdRow[],
           BdRow[],
           BdRow[],
@@ -338,6 +350,7 @@ export class BigQueryAnalyticsClient {
       projects: params.projects,
       users: params.users,
       agents: params.agents,
+      models: params.models,
     };
 
     const realtimePromise = queryRealtimeWindow
@@ -367,6 +380,11 @@ export class BigQueryAnalyticsClient {
             realtimeParams,
             sharedTypes
           ),
+          this.runParameterizedQuery<BdRow>(
+            buildRealtimeBreakdownQuery(realtimeTable, 'model'),
+            realtimeParams,
+            sharedTypes
+          ),
           this.runParameterizedQuery<TableRow>(
             buildRealtimeUsageTableQuery(realtimeTable, params.granularity),
             realtimeParams,
@@ -378,18 +396,20 @@ export class BigQueryAnalyticsClient {
             err instanceof Error
               ? err.message
               : 'Real-time telemetry table unavailable; showing billing data only.';
-          return [[], [], [], [], [], []] as [
+          return [[], [], [], [], [], [], []] as [
             KpiRow[],
             TsRow[],
+            BdRow[],
             BdRow[],
             BdRow[],
             BdRow[],
             TableRow[],
           ];
         })
-      : Promise.resolve([[], [], [], [], [], []] as [
+      : Promise.resolve([[], [], [], [], [], [], []] as [
           KpiRow[],
           TsRow[],
+          BdRow[],
           BdRow[],
           BdRow[],
           BdRow[],
@@ -397,9 +417,9 @@ export class BigQueryAnalyticsClient {
         ]);
 
     const [
-      [bKpi, bTs, bProj, bUser, bAgent, bTable],
+      [bKpi, bTs, bProj, bUser, bAgent, bModel, bTable],
       prevKpiRows,
-      [rKpi, rTs, rProj, rUser, rAgent, rTable],
+      [rKpi, rTs, rProj, rUser, rAgent, rModel, rTable],
     ] = await Promise.all([billingPromises, prevKpiPromise, realtimePromise]);
 
     const bCurr = bKpi[0] ?? {
@@ -442,6 +462,7 @@ export class BigQueryAnalyticsClient {
     const projects = mergeBreakdowns(bProj, rProj);
     const users = mergeBreakdowns(bUser, rUser);
     const agents = mergeBreakdowns(bAgent, rAgent);
+    const models = mergeBreakdowns(bModel, rModel);
     const topAgentRow = agents.find((a) => a.id !== 'unassigned') ?? agents[0] ?? null;
 
     const timeSeries: TimeSeriesPoint[] = [
@@ -528,6 +549,7 @@ export class BigQueryAnalyticsClient {
         projects,
         users,
         agents,
+        models,
       },
       usageRows,
       hasAnyLabels,

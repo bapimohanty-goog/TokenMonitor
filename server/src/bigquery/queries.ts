@@ -26,6 +26,7 @@ WITH base_usage AS (
       'unassigned'
     ) AS agent_id,
     sku.description AS sku_description,
+    TRIM(REGEXP_REPLACE(sku.description, r'(?i)\s*\b(input|output)\b\s*', ' ')) AS model_name,
     CASE
       WHEN LOWER(sku.description) LIKE '%input token%'
         OR LOWER(sku.description) LIKE '%input character%'
@@ -60,6 +61,7 @@ filtered_usage AS (
     AND (ARRAY_LENGTH(@projects) = 0 OR project_id IN UNNEST(@projects))
     AND (ARRAY_LENGTH(@users) = 0 OR user_id IN UNNEST(@users))
     AND (ARRAY_LENGTH(@agents) = 0 OR agent_id IN UNNEST(@agents))
+    AND (ARRAY_LENGTH(@models) = 0 OR model_name IN UNNEST(@models))
 )
 `;
 }
@@ -87,7 +89,8 @@ WITH base_filters AS (
         LIMIT 1
       ),
       'unassigned'
-    ) AS agent_id
+    ) AS agent_id,
+    TRIM(REGEXP_REPLACE(sku.description, r'(?i)\s*\b(input|output)\b\s*', ' ')) AS model_name
   FROM ${fullyQualifiedTable}
   WHERE
     _PARTITIONTIME >= TIMESTAMP_TRUNC(@startTime, DAY)
@@ -105,7 +108,8 @@ WITH base_filters AS (
 SELECT
   ARRAY_AGG(DISTINCT STRUCT(project_id AS id, project_name AS label) ORDER BY project_name) AS projects,
   ARRAY_AGG(DISTINCT user_id ORDER BY user_id) AS users,
-  ARRAY_AGG(DISTINCT agent_id ORDER BY agent_id) AS agents
+  ARRAY_AGG(DISTINCT agent_id ORDER BY agent_id) AS agents,
+  ARRAY_AGG(DISTINCT model_name ORDER BY model_name) AS models
 FROM base_filters
 `;
 }
@@ -144,14 +148,16 @@ ORDER BY bucket ASC
 
 export function buildBreakdownQuery(
   fullyQualifiedTable: string,
-  dimension: 'project' | 'user' | 'agent'
+  dimension: 'project' | 'user' | 'agent' | 'model'
 ): string {
   const idExpr =
     dimension === 'project'
       ? 'project_id'
       : dimension === 'user'
         ? 'user_id'
-        : 'agent_id';
+        : dimension === 'agent'
+          ? 'agent_id'
+          : 'model_name';
   const nameExpr = dimension === 'project' ? 'ANY_VALUE(project_name)' : idExpr;
 
   return `

@@ -54,6 +54,7 @@ filtered_telemetry AS (
     (ARRAY_LENGTH(@projects) = 0 OR r.project_id IN UNNEST(@projects))
     AND (ARRAY_LENGTH(@users) = 0 OR r.user_id IN UNNEST(@users))
     AND (ARRAY_LENGTH(@agents) = 0 OR r.agent_id IN UNNEST(@agents))
+    AND (ARRAY_LENGTH(@models) = 0 OR r.model_version IN UNNEST(@models))
 )
 `;
 }
@@ -92,14 +93,16 @@ ORDER BY bucket ASC
 
 export function buildRealtimeBreakdownQuery(
   fullyQualifiedRealtimeTable: string,
-  dimension: 'project' | 'user' | 'agent'
+  dimension: 'project' | 'user' | 'agent' | 'model'
 ): string {
   const idExpr =
     dimension === 'project'
       ? 'project_id'
       : dimension === 'user'
         ? 'user_id'
-        : 'agent_id';
+        : dimension === 'agent'
+          ? 'agent_id'
+          : 'model_version';
   return `
 ${baseRealtimeCte(fullyQualifiedRealtimeTable)}
 SELECT
