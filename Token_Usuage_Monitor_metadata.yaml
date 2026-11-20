@@ -1,0 +1,171 @@
+
+# File Info
+
+
+file_type: demo
+
+
+# Demo Info
+
+
+# The type of demo.
+# Supported options:
+#    application
+#    blueprint
+#    cloud_console
+#    guided_doc
+#    presentation
+#    prototype
+#    video
+type: application
+
+
+# The name of the demo.
+title: Token Usuage Monitor
+
+
+# A short description of the demo.
+thumbnail_summary: GCP Token Monitor (TokenMonitor) is a full-stack observability dashboard built to track LLM token consumption and cost on Google Cloud Platform (GCP) across Vertex AI and Gemini workloads. It combines finalized BigQuery billing exports with real-time SDK telemetry in a hybrid ("Lambda") architecture so teams do not have to choose between financial accuracy and live visibility.
+
+
+
+# [Optional] A summary of the demo's intention. Markdown supported.
+purpose: GCP Token Monitor (TokenMonitor) closes the observability gap between authoritative financial billing and live operational telemetry for Vertex AI and Gemini workloads on GCP. By pairing finalized BigQuery Cloud Billing exports (billing_reconciled) with a real-time telemetry stream (realtime_estimated) from SDK wrappers and Cloud Logging, it eliminates the standard 12–24 hour billing export lag. It also adds granular attribution beyond default GCP billing by extracting user_id and agent_id request labels (defaulting to 'unassigned'), while a configurable REALTIME_CUTOFF_HOURS boundary prevents double-counting between reconciled and live data.
+
+
+# [Optional] A summary of the demo's business value. Markdown supported.
+business_value: For FinOps, engineering leaders, and platform owners, GCP Token Monitor enables proactive cost control, clear accountability, and faster incident response. Live auto-refresh (30s) and minute-level granularity help teams catch runaway agents, prompt loops, or unexpected model spikes immediately rather than waiting for next-day billing exports. Granular attribution across Project, User, Agent, and Model/SKU supports internal chargeback, showback, and unit economics. Meanwhile, combining reconciled invoice costs (including discounts and credits) with live estimates delivers finance-grade accuracy without sacrificing operational speed, and built-in demo mode lowers evaluation friction.
+
+
+# [Optional] A summary of the demo's technical value. Markdown supported.
+technical_value: |
+  Technical Value
+  Hybrid Lambda Architecture: Combines BigQuery Detailed usage cost billing exports (billing_reconciled) with a day-partitioned streaming table (realtime_llm_telemetry.token_usage_logs, realtime_estimated) fed via a Cloud Logging Sink (token-monitor-realtime-sink).
+  
+  Double-Counting Prevention: Uses a configurable REALTIME_CUTOFF_HOURS cutoff in client.ts to separate finalized billing windows from live estimates.
+  
+  Cost-Optimized SQL & Attribution: Leverages _PARTITIONTIME and usage_start_time partition pruning in sql/queries.sql, extracts user_id and agent_id via scalar UNNEST(labels) subqueries, and aggregates live usage with a model_pricing CTE in sql/realtime_telemetry.sql.
+  
+  SDK Wrappers & Cloud-Native Stack: Provides Python (gemini_telemetry.py) and Node.js (geminiTelemetry.ts) wrappers capturing usageMetadata, backed by React 18, TypeScript, Node.js/Express, ADC, and Cloud Run deployment (DEPLOY_GCP.md).
+
+
+
+
+
+# Demo Attribution
+
+
+# The Googler who owns this demo. This user has edit access to the demo,
+# is the point of contact for the demo, and is responsible for maintaining the demo.
+owner: bapimohanty
+
+
+# [Optional] The Moma Team ID that owns this demo.
+# Displayed as an owner of the demo for attribution.
+# Moma Teams IDs can be found in the Team Page URL.
+# Example: https://moma.corp.google.com/team/1234 --> ID = 1234
+# team_owner:
+
+
+# [Optional] Googlers and Moma Teams that contributed to this demo.
+# Contributors are listed on the demo page for attribution.
+# contributors:
+
+
+# [Optional] Specify a channel ID to add this demo to a channel.
+# The owner of the demo must be a member of the channel.
+# Channel IDs can be found in the Channel Page URL.
+# Example: https://demospace.corp.goog/channels/123 --> ID = 123
+# channel_id:
+
+
+
+
+# Demo Assets
+
+
+# [Optional] List URLs to images that will be displayed on the demo.
+# The first image is used as the demo's thumbnail.
+# You may only choose up to 10 images.
+# Images must have a format of PNG or JPG.
+images:
+  - https://storage.cloud.google.com/demo-hub-images-prod/1795196005.png
+  - https://storage.cloud.google.com/demo-hub-images-prod/1795196013.png
+  - https://storage.cloud.google.com/demo-hub-images-prod/1795196021.png
+
+
+# [Optional] Provide the link to your demo automation folder on go/demos GOB repo.
+# See go/demo-automation-guide for more information.
+# click_to_deploy_path:
+
+
+
+#  A link to instructions on how to use the demo.
+demo_guide: https://github.com/bapimohanty-goog/TokenMonitor
+
+
+# [Optional] Assets belonging to the demo, such as a website, video, code repository, etc.
+# artifacts:
+
+
+# [Optional] Designate an asset as the demo's key asset.
+#
+# This asset will be featured as a button on the top of the demo's page.
+# Artifact Title must match to one of the artifacts listed in `artifacts`.
+# featured_artifact_title:
+
+
+# [Optional] Feature a supporting video. This video will be
+# embedded in its own section on the demo's page.
+#
+# Artifact Title must match to one of the artifacts listed in `artifacts`.
+# Artifact URL must be a YouTube, Drive, Broadcast, or Screencast link.
+# featured_video_artifact_title:
+
+
+
+
+# Demo Metadata
+# For industries, and products, IDs can be found at <URL>.
+
+
+# Relevant industries.
+# Supported options:
+#    all
+#    retail
+#    healthcare_life_services
+#    financial_services
+#    telecommunications
+#    media_entertainment
+#    public_sector_government
+#    public_sector
+#    manufacturing
+#    education
+#    gaming
+#    consumer_packaged_goods
+#    supply_chain
+industries:
+  - 1
+
+
+# Products featured by the demo.
+products:
+  - ai_platform
+  - bigquery
+
+
+# Additional tags to support demo discoverability.
+# tags:
+
+
+# Add restriction labels if one or more of these options are applicable.
+# Supported options:
+#    restricted       Data may be confidential. Present and share to customer
+#                     at your own discretion under NDA or other applicable restrictions.
+#    not_anonymized   Contains info or data of specific customer.
+#                     MUST anonymize before sharing or presenting to customer.
+# content_restriction_labels:
+
+
+# [Optional] Hosting environments (GCP project ID, AWS account ID, Azure subscription ID).
+# environments:
